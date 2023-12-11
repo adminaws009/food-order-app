@@ -1,0 +1,43 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build and push frontend Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ./frontend
+        push: true
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push backend Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ./backend
+        push: true
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push database Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ./database
+        push: true
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
