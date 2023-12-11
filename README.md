@@ -1,1 +1,12 @@
-# food-order-app
+/food-order-app
+  /frontend
+    Dockerfile-frontend
+    index.html
+  /backend
+    Dockerfile-backend
+    index.js
+    package.json
+  /database
+    Dockerfile-database
+    init.sql
+  docker-compose.yml
