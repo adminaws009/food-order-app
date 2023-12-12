@@ -4,14 +4,25 @@
     {
       "name": "frontend",
       "image": "awsadmin009/food-frontend:latest",
-      "essential": true,
-      "memory": 512,  // Specify the memory for the container
+      "cpu": 256,  // Adjust based on your requirements
+      "memory": 512,  // Adjust based on your requirements
       "portMappings": [
         {
           "containerPort": 8080,
           "hostPort": 0
         }
-      ]
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/food-frontend",
+          "awslogs-region": "us-east-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      }
     }
   ]
 }
