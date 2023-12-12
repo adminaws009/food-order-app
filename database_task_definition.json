@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "database",
-      "image": "your-docker-username/food-database:latest",  // Replace with your Docker Hub username
+      "image": "awsadmin009/food-database:latest",  // Replace with your Docker Hub username
       "essential": true,
       "portMappings": [
         {
