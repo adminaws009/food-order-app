@@ -1,7 +1,7 @@
 {
   "serviceName": "food-database-service",
   "taskDefinition": "food-database",
-  "cluster": "your-ecs-cluster-name",
+  "cluster": "food-order-app",
   "launchType": "FARGATE",
   "desiredCount": 1,
   "networkConfiguration": {
