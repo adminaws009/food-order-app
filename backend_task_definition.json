@@ -3,14 +3,26 @@
   "containerDefinitions": [
     {
       "name": "backend",
-      "image": "awsadmin009/food-backend:latest",  // Replace with your Docker Hub username
-      "essential": true,
+      "image": "awsadmin009/food-backend:latest",
+      "cpu": 256,  // Adjust based on your requirements
+      "memory": 512,  // Adjust based on your requirements
       "portMappings": [
         {
-          "containerPort": 8080,
-          "hostPort": 0  // Let ECS assign a dynamic port
+          "containerPort": 8081,
+          "hostPort": 0
         }
-      ]
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/food-backend",
+          "awslogs-region": "us-east-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      }
     }
   ]
 }
