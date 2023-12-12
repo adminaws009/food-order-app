@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "frontend",
-      "image": "your-docker-username/food-frontend:latest",  // Replace with your Docker Hub username
+      "image": "awsadmin009/food-frontend:latest",  // Replace with your Docker Hub username
       "essential": true,
       "portMappings": [
         {
