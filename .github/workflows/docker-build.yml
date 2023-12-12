@@ -92,8 +92,12 @@ jobs:
 
       - name: Deploy Frontend to ECS
         run: |
-          aws ecs register-task-definition --cli-input-json file=frontend_task_definition.json
-          aws ecs update-service --cli-input-json file=frontend_service.json --cluster ${{ secrets.ECS_CLUSTER_NAME }}
+         FRONTEND_TASK_DEFINITION=$(cat frontend_task_definition.json)
+         FRONTEND_SERVICE_DEFINITION=$(cat frontend_service.json)
+
+          aws ecs register-task-definition --cli-input-json "$FRONTEND_TASK_DEFINITION"
+          aws ecs update-service --cli-input-json "$FRONTEND_SERVICE_DEFINITION" --cluster ${{ secrets.ECS_CLUSTER_NAME }}
+
 
       - name: Deploy Backend to ECS
         run: |
