@@ -5,6 +5,7 @@
       "name": "frontend",
       "image": "awsadmin009/food-frontend:latest",
       "essential": true,
+      "memory": 512,  // Specify the memory for the container
       "portMappings": [
         {
           "containerPort": 8080,
