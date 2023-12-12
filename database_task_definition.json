@@ -4,8 +4,8 @@
     {
       "name": "database",
       "image": "awsadmin009/food-database:latest",
-      "cpu": 256,  // Adjust based on your requirements
-      "memory": 512,  // Adjust based on your requirements
+      "cpu": 256,
+      "memory": 512,
       "portMappings": [
         {
           "containerPort": 3306,
@@ -24,5 +24,6 @@
         "secretOptions": []
       }
     }
-  ]
+  ],
+  "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole"
 }
