@@ -3,12 +3,12 @@
   "containerDefinitions": [
     {
       "name": "frontend",
-      "image": "awsadmin009/food-frontend:latest",  // Replace with your Docker Hub username
+      "image": "awsadmin009/food-frontend:latest",
       "essential": true,
       "portMappings": [
         {
           "containerPort": 8080,
-          "hostPort": 0  // Let ECS assign a dynamic port
+          "hostPort": 0
         }
       ]
     }
