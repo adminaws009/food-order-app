@@ -1,0 +1,16 @@
+{
+  "family": "food-frontend",
+  "containerDefinitions": [
+    {
+      "name": "frontend",
+      "image": "your-docker-username/food-frontend:latest",  // Replace with your Docker Hub username
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 0  // Let ECS assign a dynamic port
+        }
+      ]
+    }
+  ]
+}
