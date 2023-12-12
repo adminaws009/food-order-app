@@ -20,6 +20,8 @@ jobs:
       with:
         context: ./frontend
         push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/food-frontend:latest
+        
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -29,6 +31,7 @@ jobs:
       with:
         context: ./backend
         push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/food-backend:latest
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -38,6 +41,7 @@ jobs:
       with:
         context: ./database
         push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/food-database:latest
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
