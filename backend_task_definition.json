@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "backend",
-      "image": "your-docker-username/food-backend:latest",  // Replace with your Docker Hub username
+      "image": "awsadmin009/food-backend:latest",  // Replace with your Docker Hub username
       "essential": true,
       "portMappings": [
         {
