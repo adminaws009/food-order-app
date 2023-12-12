@@ -3,14 +3,26 @@
   "containerDefinitions": [
     {
       "name": "database",
-      "image": "awsadmin009/food-database:latest",  // Replace with your Docker Hub username
-      "essential": true,
+      "image": "awsadmin009/food-database:latest",
+      "cpu": 256,  // Adjust based on your requirements
+      "memory": 512,  // Adjust based on your requirements
       "portMappings": [
         {
           "containerPort": 3306,
-          "hostPort": 0  // Let ECS assign a dynamic port
+          "hostPort": 0
         }
-      ]
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/food-database",
+          "awslogs-region": "us-east-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      }
     }
   ]
 }
