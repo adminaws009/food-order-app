@@ -1,0 +1,16 @@
+{
+  "family": "food-database",
+  "containerDefinitions": [
+    {
+      "name": "database",
+      "image": "your-docker-username/food-database:latest",  // Replace with your Docker Hub username
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3306,
+          "hostPort": 0  // Let ECS assign a dynamic port
+        }
+      ]
+    }
+  ]
+}
