@@ -88,3 +88,19 @@ jobs:
          docker build -t database-image .
          docker tag database-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/database:latest
          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/database:latest
+
+
+      - name: Deploy Frontend to ECS
+        run: |
+          aws ecs register-task-definition --cli-input-json file=frontend_task_definition.json
+          aws ecs update-service --cli-input-json file=frontend_service.json --cluster ${{ secrets.ECS_CLUSTER_NAME }}
+
+      - name: Deploy Backend to ECS
+        run: |
+         aws ecs register-task-definition --cli-input-json file=backend_task_definition.json
+         aws ecs update-service --cli-input-json file=backend_service.json --cluster ${{ secrets.ECS_CLUSTER_NAME }}
+
+      - name: Deploy Database to ECS
+        run: |
+         aws ecs register-task-definition --cli-input-json file=database_task_definition.json
+         aws ecs update-service --cli-input-json file=database_service.json --cluster ${{ secrets.ECS_CLUSTER_NAME }}
