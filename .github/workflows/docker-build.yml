@@ -95,8 +95,15 @@ jobs:
          FRONTEND_TASK_DEFINITION=$(cat frontend_task_definition.json)
          FRONTEND_SERVICE_DEFINITION=$(cat frontend_service.json)
 
-          aws ecs register-task-definition --cli-input-json "$FRONTEND_TASK_DEFINITION"
-          aws ecs update-service --cli-input-json "$FRONTEND_SERVICE_DEFINITION" --cluster ${{ secrets.ECS_CLUSTER_NAME }}
+         aws ecs register-task-definition --cli-input-json "$FRONTEND_TASK_DEFINITION"
+         aws ecs create-service \
+         --cluster food-order-app \
+         --service-name food-frontend-service \
+         --task-definition food-frontend \
+         --launch-type FARGATE \
+         --desired-count 1 \
+         --network-configuration "awsvpcConfiguration={securityGroups=[]}" \
+         --region us-east-1
 
 
       - name: Deploy Backend to ECS
