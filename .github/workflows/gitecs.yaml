@@ -60,16 +60,15 @@ jobs:
 
       - name: Deploy Backend to Amazon ECS
         run: |
-         aws ecs register-task-definition --cli-input-json file=$ECS_BACKEND_TASK_DEFINITION
-         aws ecs update-service --cli-input-json file=backend_service.json --cluster $ECS_CLUSTER
+          aws ecs register-task-definition --cli-input-json file=$ECS_BACKEND_TASK_DEFINITION
+          aws ecs update-service --cli-input-json file=backend_service.json --cluster $ECS_CLUSTER
 
       - name: Deploy Database to Amazon ECS
         run: |
-         aws ecs register-task-definition --cli-input-json file=$ECS_DATABASE_TASK_DEFINITION
-         aws ecs update-service --cli-input-json file=database_service.json --cluster $ECS_CLUSTER
+          aws ecs register-task-definition --cli-input-json file=$ECS_DATABASE_TASK_DEFINITION
+          aws ecs update-service --cli-input-json file=database_service.json --cluster $ECS_CLUSTER
 
       - name: Deploy Frontend to Amazon ECS
         run: |
          aws ecs register-task-definition --cli-input-json file=$ECS_FRONTEND_TASK_DEFINITION
          aws ecs update-service --cli-input-json file=frontend_service.json --cluster $ECS_CLUSTER
-
