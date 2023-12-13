@@ -1,12 +1,13 @@
 {
-  "serviceName": "food-backend-service",
-  "taskDefinition": "food-backend",
+  "serviceName": "backend-service",
+  "taskDefinition": "backend",
   "cluster": "food-order-app",
   "launchType": "FARGATE",
   "desiredCount": 1,
   "networkConfiguration": {
     "awsvpcConfiguration": {
-      "securityGroups": []  // No need to specify security groups for default VPC
+      "securityGroups": [],
+      "subnets": []
     }
   }
 }
