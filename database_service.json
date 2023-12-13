@@ -1,12 +1,13 @@
 {
-  "serviceName": "food-database-service",
-  "taskDefinition": "food-database",
+  "serviceName": "database-service",
+  "taskDefinition": "database",
   "cluster": "food-order-app",
   "launchType": "FARGATE",
   "desiredCount": 1,
   "networkConfiguration": {
     "awsvpcConfiguration": {
-      "securityGroups": []  // No need to specify security groups for default VPC
+      "securityGroups": [],
+      "subnets": []
     }
   }
 }
