@@ -1,15 +1,16 @@
 {
-  "family": "food-backend",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/mybackend:1",
   "containerDefinitions": [
     {
-      "name": "backend",
-      "image": "awsadmin009/food-backend:latest",
-      "cpu": 256,
-      "memory": 512,
+      "name": "mybackend",
+      "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/backend:${IMAGE_TAG}",
+      "cpu": 1024,
+      "memory": 3072,
       "portMappings": [
         {
-          "containerPort": 8081,
-          "hostPort": 0
+          "containerPort": 8080,
+          "hostPort": 0,
+          "protocol": "tcp"
         }
       ],
       "essential": true,
@@ -17,13 +18,14 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "/ecs/food-backend",
-          "awslogs-region": "us-east-2",
+          "awslogs-group": "/ecs/mybackend",
+          "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         },
         "secretOptions": []
       }
     }
   ],
+  "family": "mybackend",
   "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole"
 }
