@@ -1,15 +1,16 @@
 {
-  "family": "food-database",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/mydatabase:1",
   "containerDefinitions": [
     {
-      "name": "database",
-      "image": "awsadmin009/food-database:latest",
-      "cpu": 256,
-      "memory": 512,
+      "name": "mydatabase",
+      "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/database:${IMAGE_TAG}",
+      "cpu": 1024,
+      "memory": 3072,
       "portMappings": [
         {
           "containerPort": 3306,
-          "hostPort": 0
+          "hostPort": 0,
+          "protocol": "tcp"
         }
       ],
       "essential": true,
@@ -17,13 +18,14 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "/ecs/food-database",
-          "awslogs-region": "us-east-2",
+          "awslogs-group": "/ecs/mydatabase",
+          "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         },
         "secretOptions": []
       }
     }
   ],
+  "family": "mydatabase",
   "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole"
 }
