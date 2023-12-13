@@ -1,12 +1,13 @@
 {
-  "serviceName": "food-frontend-service",
-  "taskDefinition": "food-frontend",
+  "serviceName": "frontend-service",
+  "taskDefinition": "frontend",
   "cluster": "food-order-app",
   "launchType": "FARGATE",
   "desiredCount": 1,
   "networkConfiguration": {
     "awsvpcConfiguration": {
-      "securityGroups": []
+      "securityGroups": [],
+      "subnets": []
     }
   }
 }
