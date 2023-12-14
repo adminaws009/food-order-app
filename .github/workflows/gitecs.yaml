@@ -57,8 +57,46 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Deploy Frontend to ECS
+      # Register and deploy ECS services
+
+      - name: Register Frontend Task Definition
         run: |
-         FRONTEND_TASK_DEFINITION=$(cat frontend_task_definition.json)
-         FRONTEND_SERVICE_DEFINITION=$(cat frontend_service.json)
-         aws ecs register-task-definition --cli-input-json "$FRONTEND_TASK_DEFINITION"
+          FRONTEND_TASK_DEFINITION=$(cat frontend_task_definition.json)
+          aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$FRONTEND_TASK_DEFINITION"
+
+      - name: Deploy Frontend Service
+        run: |
+          aws ecs create-service \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_FRONTEND_SERVICE \
+            --task-definition $ECS_FRONTEND_TASK_DEFINITION \
+            --launch-type FARGATE \
+            --region ${{ secrets.AWS_REGION }}
+
+      - name: Register Backend Task Definition
+        run: |
+          BACKEND_TASK_DEFINITION=$(cat backend_task_definition.json)
+          aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$BACKEND_TASK_DEFINITION"
+
+      - name: Deploy Backend Service
+        run: |
+          aws ecs create-service \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_BACKEND_SERVICE \
+            --task-definition $ECS_BACKEND_TASK_DEFINITION \
+            --launch-type FARGATE \
+            --region ${{ secrets.AWS_REGION }}
+
+      - name: Register Database Task Definition
+        run: |
+          DATABASE_TASK_DEFINITION=$(cat database_task_definition.json)
+          aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$DATABASE_TASK_DEFINITION"
+
+      - name: Deploy Database Service
+        run: |
+          aws ecs create-service \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_DATABASE_SERVICE \
+            --task-definition $ECS_DATABASE_TASK_DEFINITION \
+            --launch-type FARGATE \
+            --region ${{ secrets.AWS_REGION }}
