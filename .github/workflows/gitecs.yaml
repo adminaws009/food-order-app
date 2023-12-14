@@ -62,17 +62,17 @@ jobs:
 
 
 
-      - name: Download frontend task definition
-        run: |
-          cat frontend_task_definition.json > frontend-task-definition.json
+
+
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: frontend-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: frontend-task-definition.json
-          container-name: myfrontend
-          image: ${{ steps.build-image.outputs.image }}
+           task-definition: frontend_task_definition.json
+           container-name: myfrontend
+           image: ${{ steps.build-image.outputs.image }}
+
 
 
       - name: Create Frontend ECS service
