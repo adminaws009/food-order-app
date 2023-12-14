@@ -1,62 +1,60 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/myfrontend:2",
-    "containerDefinitions": [
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/myfrontend:2",
+  "containerDefinitions": [
+    {
+      "name": "myfrontend",
+      "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/frontend:${IMAGE_TAG}",
+      "cpu": 0,
+      "portMappings": [
         {
-            "name": "myfrontend",
-            "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/frontend:${IMAGE_TAG}",  // Replace with your new image tag
-            "cpu": 0,
-            "portMappings": [
-                {
-                    "name": "myfrontend-8080-tcp",
-                    "containerPort": 8080,
-                    "hostPort": 8080,
-                    "protocol": "tcp",
-                    "appProtocol": "http"
-                }
-            ],
-            "essential": true,
-            "environment": [],
-            "environmentFiles": [],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "ulimits": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-create-group": "true",
-                    "awslogs-group": "/ecs/myfrontend",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
-            }
+          "name": "myfrontend-8080-tcp",
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "appProtocol": "http"
         }
-    ],
-    "family": "myfrontend",
-    "taskRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
-    "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
-    "networkMode": "awsvpc",
-    "revision": 2,  // Increment the revision
-    "volumes": [],
-    "status": "ACTIVE",
-    "requiresAttributes": [
-        // ... (unchanged)
-    ],
-    "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE"
-    ],
-    "requiresCompatibilities": [
-        "FARGATE"
-    ],
-    "cpu": "1024",
-    "memory": "3072",
-    "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
-        "operatingSystemFamily": "LINUX"
-    },
-    "registeredAt": "2023-12-13T13:31:29.758Z",
-    "registeredBy": "arn:aws:iam::800773404931:user/Admin",
-    "tags": []
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/myfrontend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      }
+    }
+  ],
+  "family": "myfrontend",
+  "taskRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "revision": 2,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "3072",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "registeredAt": "2023-12-13T13:31:29.758Z",
+  "registeredBy": "arn:aws:iam::800773404931:user/Admin",
+  "tags": []
 }
