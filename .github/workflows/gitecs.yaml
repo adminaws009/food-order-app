@@ -59,16 +59,7 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_ENV
 
 
-      - name: Create Frontend ECS service
-        run: |
-         aws ecs create-service \
-         --cluster $ECS_CLUSTER \
-         --service-name $ECS_FRONTEND_SERVICE \
-         --task-definition $ECS_FRONTEND_TASK_DEFINITION \
-         --desired-count 1 \
-         --region $AWS_REGION  # Add the region to the command
-    # Add a sleep command to wait for the service to stabilize
-    
+
 
 
       - name: Download frontend task definition
@@ -82,6 +73,20 @@ jobs:
           task-definition: frontend-task-definition.json
           container-name: myfrontend
           image: ${{ steps.build-image.outputs.image }}
+
+
+      - name: Create Frontend ECS service
+        run: |
+         aws ecs create-service \
+         --cluster $ECS_CLUSTER \
+         --service-name $ECS_FRONTEND_SERVICE \
+         --task-definition $ECS_FRONTEND_TASK_DEFINITION \
+         --desired-count 1 \
+         --region $AWS_REGION  # Add the region to the command
+    # Add a sleep command to wait for the service to stabilize
+    
+
+
 
       - name: Deploy Amazon ECS frontend task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
