@@ -81,13 +81,9 @@ jobs:
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+          #wait-for-service-stability: true
 
 
-      - name: Set Task Definition ARN
-        run: echo "TASK_DEFINITION_ARN=${{ steps.frontend-task-def.outputs.task-definition-arn }}" >> $GITHUB_ENV
-
- 
 
 
       - name: ECS Service
