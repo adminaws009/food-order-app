@@ -59,16 +59,15 @@ jobs:
 
       # Register and deploy ECS services
 
-      - name: Register ECS Task Definition
+      - name: Deploy Frontend to ECS
         run: |
          FRONTEND_TASK_DEFINITION=$(cat frontend_task_definition.json)
-
-             # Register the task definition
-
-         FAMILY=$(aws ecs register-task-definition \
-          --region ${{ secrets.AWS_REGION }} \
-          --cli-input-json "$FRONTEND_TASK_DEFINITION" \
-          --query 'taskDefinition.family' \
-          --output text)
-     
-         echo "Family name: $FAMILY"
+         aws ecs register-task-definition --cli-input-json "$FRONTEND_TASK_DEFINITION"
+         aws ecs create-service \
+          --cluster food-order-app \
+          --service-name food-frontend-service \
+          --task-definition myfrontend \
+          --launch-type FARGATE \
+          --desired-count 1 \
+          --network-configuration "awsvpcConfiguration={securityGroups=[]}" \
+          --region us-east-1
