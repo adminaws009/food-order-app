@@ -68,7 +68,6 @@ jobs:
 
 
       - name: Render Frontend ECS Task Definition
-        id: frontend-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
            task-definition: frontend_task_definition.json
@@ -77,11 +76,18 @@ jobs:
 
 
       - name: Deploy Amazon ECS frontend task definition
+        id: frontend-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+
+      - name: Set Task Definition ARN
+        run: echo "TASK_DEFINITION_ARN=${{ steps.frontend-task-def.outputs.task-definition-arn }}" >> $GITHUB_ENV
+
+ 
 
 
       - name: ECS Service
@@ -95,7 +101,7 @@ jobs:
            "desiredCount": 1,
            "region": "${{ secrets.AWS_REGION }}"
            }
-         force-new-deployment: false
+         force-new-deployment: true
          wait-until-deployment-complete: true
 
       - name: Delete ECS Service
@@ -107,4 +113,4 @@ jobs:
             "serviceName": "${{ env.ECS_FRONTEND_SERVICE }}"
             }
           action: delete
-          force-delete: false
+          force-delete: true
