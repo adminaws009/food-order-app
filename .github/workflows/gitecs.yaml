@@ -59,45 +59,16 @@ jobs:
 
       # Register and deploy ECS services
 
-      - name: Register Frontend Task Definition
+      - name: Register ECS Task Definition
         run: |
          FRONTEND_TASK_DEFINITION=$(cat frontend_task_definition.json)
-         echo "$FRONTEND_TASK_DEFINITION" > frontend_task_definition_modified.json  # Save JSON to a file
-         aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$(cat frontend_task_definition_modified.json)"
 
-      - name: Deploy Frontend Service
-        run: |
-          aws ecs create-service \
-            --cluster $ECS_CLUSTER \
-            --service-name $ECS_FRONTEND_SERVICE \
-            --task-definition $ECS_FRONTEND_TASK_DEFINITION \
-            --launch-type FARGATE \
-            --region ${{ secrets.AWS_REGION }}
+             # Register the task definition
 
-      - name: Register Backend Task Definition
-        run: |
-          BACKEND_TASK_DEFINITION=$(cat backend_task_definition.json)
-          aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$BACKEND_TASK_DEFINITION"
-
-      - name: Deploy Backend Service
-        run: |
-          aws ecs create-service \
-            --cluster $ECS_CLUSTER \
-            --service-name $ECS_BACKEND_SERVICE \
-            --task-definition $ECS_BACKEND_TASK_DEFINITION \
-            --launch-type FARGATE \
-            --region ${{ secrets.AWS_REGION }}
-
-      - name: Register Database Task Definition
-        run: |
-          DATABASE_TASK_DEFINITION=$(cat database_task_definition.json)
-          aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$DATABASE_TASK_DEFINITION"
-
-      - name: Deploy Database Service
-        run: |
-          aws ecs create-service \
-            --cluster $ECS_CLUSTER \
-            --service-name $ECS_DATABASE_SERVICE \
-            --task-definition $ECS_DATABASE_TASK_DEFINITION \
-            --launch-type FARGATE \
-            --region ${{ secrets.AWS_REGION }}
+         FAMILY=$(aws ecs register-task-definition \
+          --region ${{ secrets.AWS_REGION }} \
+          --cli-input-json "$FRONTEND_TASK_DEFINITION" \
+          --query 'taskDefinition.family' \
+          --output text)
+     
+         echo "Family name: $FAMILY"
