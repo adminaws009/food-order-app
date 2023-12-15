@@ -62,12 +62,13 @@ jobs:
 #
 
 
-      #- name: Download frontend task definition
-       # run: |
-             # cat frontend_task_definition.json > frontend-task-definition.json
+      - name: Download frontend task definition
+        run: |
+              cat frontend_task_definition.json > frontend-task-definition.json
 
 
       - name: Render Frontend ECS Task Definition
+        id: frontend-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
            task-definition: frontend_task_definition.json
@@ -76,7 +77,6 @@ jobs:
 
 
       - name: Deploy Amazon ECS frontend task definition
-        id: frontend-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
