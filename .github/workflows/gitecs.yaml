@@ -62,9 +62,9 @@ jobs:
 #
 
 
-      - name: Download frontend task definition
-        run: |
-              cat frontend_task_definition.json > frontend-task-definition.json
+      #- name: Download frontend task definition
+       # run: |
+             # cat frontend_task_definition.json > frontend-task-definition.json
 
 
       - name: Render Frontend ECS Task Definition
