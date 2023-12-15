@@ -100,9 +100,9 @@ jobs:
               "region": "${{ secrets.AWS_REGION }}",
               "networkConfiguration": {
                 "awsvpcConfiguration": {
-                  "subnets": [], // Empty array to use default subnets
-                  "securityGroups": [], // Empty array to use default security groups
-                  "assignPublicIp": "ENABLED" // Enables automatic public IP assignment
+                  "subnets": [], 
+                  "securityGroups": [], 
+                  "assignPublicIp": "ENABLED"
                 }
               }
             }
