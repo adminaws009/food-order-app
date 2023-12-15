@@ -99,8 +99,7 @@ jobs:
               "desiredCount": 1,
               "region": "${{ secrets.AWS_REGION }}",
               "networkConfiguration": {
-                "awsvpcConfiguration": { 
-                  "securityGroups": [], 
+                "awsvpcConfiguration": {  
                   "assignPublicIp": "ENABLED"
                 }
               }
