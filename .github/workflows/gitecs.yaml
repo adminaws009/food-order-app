@@ -45,28 +45,22 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG ./frontend
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
       - name: Build, tag, and push backend image
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG ./backend
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG" >> $GITHUB_ENV
-
       - name: Build, tag, and push database image
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG ./database
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_ENV
-
-
 #
 
 
       - name: Download frontend task definition
         run: |
               cat frontend_task_definition.json > frontend-task-definition.json
-
-
       - name: Render Frontend ECS Task Definition
         id: frontend-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -108,4 +102,3 @@ jobs:
             }
           action: delete
           force-delete: true
-
