@@ -61,6 +61,8 @@ jobs:
       - name: Download frontend task definition
         run: |
               cat frontend_task_definition.json > frontend-task-definition.json
+
+
       - name: Render Frontend ECS Task Definition
         id: frontend-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -70,22 +72,30 @@ jobs:
            image: ${{ steps.build-image.outputs.image }}
 
 
+
       - name: Deploy Amazon ECS frontend task definition
+        id: deploy-ecs-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
+      - name: Store Task Definition ARN
+        if: success() # Only store ARN if deployment was successful
+        run: echo "TASK_DEFINITION_ARN=${{ steps.deploy-ecs-task-def.outputs.task-definition-arn }}" >> $GITHUB_ENV
+        
+
 
       - name: ECS Service
+        if: success()
         uses: scribd/amazon-ecs-service-action@v1
         with:
          spec: |
           {
            "cluster": "${{ env.ECS_CLUSTER }}",
            "serviceName": "${{ env.ECS_FRONTEND_SERVICE }}",
-           "taskDefinition": "${{ steps.frontend-task-def.outputs.task-definition-arn }}",
+           "taskDefinition": "${{ env.TASK_DEFINITION_ARN }}",
            "desiredCount": 1,
            "region": "${{ secrets.AWS_REGION }}"
            }
