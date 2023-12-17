@@ -79,7 +79,9 @@ jobs:
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_FRONTEND_SERVICE }}  # Using the environment variable for service name
           wait-for-service-stability: true
+          force-new-deployment: true  # Force a new deployment
 
 
       - name: Update ECS service desired count
@@ -94,26 +96,6 @@ jobs:
         
 
 
-      - name: ECS Service
-        if: success()
-        uses: scribd/amazon-ecs-service-action@v1
-        with:
-          spec: |
-            {
-              "cluster": "${{ env.ECS_CLUSTER }}",
-              "serviceName": "${{ env.ECS_FRONTEND_SERVICE }}",
-              "taskDefinition": "${{ env.TASK_DEFINITION_ARN }}",
-              "desiredCount": 1,
-              "region": "${{ secrets.AWS_REGION }}",
-              "networkConfiguration": {
-                "awsvpcConfiguration": {  
-                  "assignPublicIp": "ENABLED"
-                }
-              }
-            }
-          force-new-deployment: true
-          wait-until-deployment-complete: true
-      
 
       - name: Delete ECS Service
         uses: scribd/amazon-ecs-service-action@v1
