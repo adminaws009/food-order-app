@@ -79,7 +79,6 @@ jobs:
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
-          service: myfrontend-service  # Updated service name
           wait-for-service-stability: true
 
 
