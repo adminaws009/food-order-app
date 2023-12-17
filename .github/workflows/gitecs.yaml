@@ -21,7 +21,7 @@ jobs:
       ECS_BACKEND_TASK_DEFINITION: backend_task_definition.json
       ECS_DATABASE_SERVICE: database-service
       ECS_DATABASE_TASK_DEFINITION: database_task_definition.json
-      ECS_FRONTEND_SERVICE: frontend-service
+      ECS_FRONTEND_SERVICE: myfrontend-service
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
 
     steps:
@@ -79,8 +79,16 @@ jobs:
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
+          service: myfrontend-service  # Updated service name
           wait-for-service-stability: true
 
+
+      - name: Update ECS service desired count
+        run: |
+            aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service myfrontend-service --desired-count 2 --region ${{ secrets.AWS_REGION }}
+
+
+          
       - name: Store Task Definition ARN
         if: success() # Only store ARN if deployment was successful
         run: echo "TASK_DEFINITION_ARN=${{ steps.deploy-ecs-task-def.outputs.task-definition-arn }}" >> $GITHUB_ENV
