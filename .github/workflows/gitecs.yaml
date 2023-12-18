@@ -23,6 +23,8 @@ jobs:
       ECS_DATABASE_TASK_DEFINITION: database_task_definition.json
       ECS_FRONTEND_SERVICE: myfooadapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
+      CONTAINER_NAME: "foodapp"
+      CONTAINER_PORT: 8080
 
     steps:
       - name: Checkout code
@@ -45,17 +47,27 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG ./frontend
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+
       - name: Build, tag, and push backend image
+        id: backend-image
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG ./backend
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG" >> $GITHUB_ENV
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+
       - name: Build, tag, and push database image
+        id: databse-image
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG ./database
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_ENV
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_OUTPUT
 #
+
+
+#FRONT END ECS DEPLOYMENT WITH LOADBALANCER ATTACHEMNT 
+
 
 
       - name: Download frontend task definition
@@ -71,8 +83,6 @@ jobs:
            container-name: myfrontend
            image: ${{ steps.build-image.outputs.image }}
 
-
-
       - name: Deploy Amazon ECS frontend task definition
         id: deploy-ecs-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -82,23 +92,83 @@ jobs:
           wait-for-service-stability: false
           force-new-deployment: true  # Force a new deployment
 
-      - name: Deploy Amazon ECS frontend task definition and update service count
+      - name: Update ECS service with load balancer
         run: |
-               # Deploy ECS task definition
-               aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
-               aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service ${{ env.ECS_FRONTEND_SERVICE }} \
+              --desired-count 2 \
+              --region ${{ secrets.AWS_REGION }} \
+              --load-balancers '[{
+                "containerName": "${{ env.CONTAINER_NAME }}",
+                "containerPort": ${{ env.CONTAINER_PORT }},
+                "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}"
+              }]'
+            aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
+      #- name: Update ECS service desired count
+        #run: |
+           #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
+        
+
+
+#BACKEND ECS DEPLOYMENT
+
+
+      - name: Render Backend ECS Task Definition
+        id: backend-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+              task-definition: backend_task_definition.json
+              container-name: backend
+              image: ${{ steps.backend-image.outputs.image }}
   
+   
+      - name: Deploy Amazon ECS Backend task definition
+        id: deploy-backend-task-def
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+             task-definition: ${{ steps.backend-task-def.outputs.task-definition }}
+             service: ${{ env.ECS_BACKEND_SERVICE }}
+             cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+             wait-for-service-stability: false
+             force-new-deployment: true  #
+
+
+      - name: Update ECS Backend service desired count
+        run: |
+              aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_BACKEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
+             
+     
+     
+     
+         # DATABASE ECS DEPLOYMENT
+
+
+
+      - name: Render Databse ECS Task Definition
+        id: databse-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+                   task-definition: database_task_definition.json
+                   container-name: database
+                   image: ${{ steps.databse-image.outputs.image }}
   
+        
+      - name: Deploy Amazon ECS frontend task definition
+        id: deploy-databse-task-def
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+                  task-definition: ${{ steps.databse-task-def.outputs.task-definition }}
+                  service: ${{ env.ECS_DATABASE_SERVICE }}
+                  cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+                  wait-for-service-stability: false
+                  force-new-deployment: true  #
+     
       - name: Update ECS service desired count
         run: |
-           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
-
-
-          
-      - name: Store Task Definition ARN
-        if: success() # Only store ARN if deployment was successful
-        run: echo "TASK_DEFINITION_ARN=${{ steps.deploy-ecs-task-def.outputs.task-definition-arn }}" >> $GITHUB_ENV
+           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_DATABASE_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
         
+
 
 
 

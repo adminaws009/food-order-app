@@ -27,20 +27,27 @@ app.get('/', (req, res) => {
 });
 
 app.post('/place-order', (req, res) => {
-  const foodType = req.body.foodType;
-  const quantity = req.body.quantity;
+  const { name, phone, foodType, quantity } = req.body;
+  const itemCost = 12;
 
-  const sql = 'INSERT INTO orders (food_type, quantity) VALUES (?, ?)';
-  db.query(sql, [foodType, quantity], (err, result) => {
+  // Calculate total cost
+  const totalCost = quantity * itemCost;
+
+  const sql = 'INSERT INTO orders (name, phone, food_type, quantity, item_cost, total_cost) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(sql, [name, phone, foodType, quantity, itemCost, totalCost], (err, result) => {
     if (err) {
       console.error('Error inserting into MySQL:', err);
+      res.status(500).send('Error placing order');
       return;
     }
 
-    console.log(`Order placed for ${quantity} ${foodType}(s).`);
+    const orderNumber = result.insertId;
+    const successMessage = `Thanks for placing the order! Order Details: Order Number ${orderNumber}, Food Type: ${foodType}, Quantity: ${quantity}, Total Cost: $${totalCost}`;
 
-    // Redirect to the home page after placing the order
-    res.redirect('/');
+    console.log(successMessage);
+
+    // Respond with success message and order details
+    res.send(successMessage);
   });
 });
 
