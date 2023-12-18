@@ -21,7 +21,7 @@ jobs:
       ECS_BACKEND_TASK_DEFINITION: backend_task_definition.json
       ECS_DATABASE_SERVICE: database-service
       ECS_DATABASE_TASK_DEFINITION: database_task_definition.json
-      ECS_FRONTEND_SERVICE: myfrontend-service
+      ECS_FRONTEND_SERVICE: myfooadapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
 
     steps:
@@ -78,15 +78,20 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          service: ${{ env.ECS_FRONTEND_SERVICE }}  # Using the environment variable for service name
-          wait-for-service-stability: true
+          cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+          wait-for-service-stability: false
           force-new-deployment: true  # Force a new deployment
 
-
+      - name: Deploy Amazon ECS frontend task definition and update service count
+        run: |
+               # Deploy ECS task definition
+               aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
+               aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
+  
+  
       - name: Update ECS service desired count
         run: |
-            aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service myfrontend-service --desired-count 2 --region ${{ secrets.AWS_REGION }}
+           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
 
 
           
