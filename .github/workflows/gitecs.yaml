@@ -80,7 +80,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
            task-definition: frontend_task_definition.json
-           container-name: myfrontend
+           container-name: foodapp
            image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS frontend task definition
