@@ -102,13 +102,13 @@ jobs:
 
 
 
-      - name: Delete ECS Service
-        uses: scribd/amazon-ecs-service-action@v1
-        with:
-          spec: |
-           {
-            "cluster": "${{ env.ECS_CLUSTER }}",
-            "serviceName": "${{ env.ECS_FRONTEND_SERVICE }}"
-            }
-          action: delete
-          force-delete: true
+      #- name: Delete ECS Service
+        #uses: scribd/amazon-ecs-service-action@v1
+        #with:
+          #spec: |
+           #{
+            #"cluster": "${{ env.ECS_CLUSTER }}",
+            #"serviceName": "${{ env.ECS_FRONTEND_SERVICE }}"
+            #}
+          #action: delete
+          #force-delete: true
