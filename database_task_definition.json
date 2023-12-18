@@ -3,7 +3,7 @@
   "containerDefinitions": [
       {
           "name": "database",
-          "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/frontend:${IMAGE_TAG}",
+          "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/database:${IMAGE_TAG}",
           "cpu": 0,
           "portMappings": [
               {
