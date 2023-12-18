@@ -100,7 +100,7 @@ jobs:
               --desired-count 2 \
               --region ${{ secrets.AWS_REGION }} \
               --load-balancers '[{
-                "containerName": "${{ env.CONTAINER_NAME }}",
+                "containerName": "foodapp",
                 "containerPort": ${{ env.CONTAINER_PORT }},
                 "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}"
               }]'
