@@ -23,7 +23,7 @@ jobs:
       ECS_DATABASE_TASK_DEFINITION: database_task_definition.json
       ECS_FRONTEND_SERVICE: myfooadapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
-      CONTAINER_NAME: foodapp
+      CONTAINER_NAME: "foodapp"
       CONTAINER_PORT: 8080
 
     steps:
@@ -83,6 +83,8 @@ jobs:
            container-name: foodapp
            image: ${{ steps.build-image.outputs.image }}
 
+
+
       - name: Deploy Amazon ECS frontend task definition
         id: deploy-ecs-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -105,7 +107,11 @@ jobs:
                 "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}"
               }]'
             aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
-      #- name: Update ECS service desired count
+      
+    
+
+
+          #- name: Update ECS service desired count
         #run: |
            #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
         
