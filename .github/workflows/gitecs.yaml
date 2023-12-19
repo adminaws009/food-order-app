@@ -90,9 +90,9 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
-          cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
           service: ${{ env.ECS_FRONTEND_SERVICE }}
-          wait-for-service-stability: false
+          cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+          wait-for-service-stability: true
           force-new-deployment: true  # Force a new deployment
 
       - name: Update ECS service with load balancer
