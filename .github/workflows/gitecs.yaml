@@ -86,18 +86,12 @@ jobs:
       - name: List ECS Services
         run: aws ecs list-services --cluster ${{ env.ECS_CLUSTER }} --region ${{ secrets.AWS_REGION }}
 
-      - name: Register ECS Task Definition
-        id: register-task-definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: frontend_task_definition.json
-         
 
       - name: Deploy Amazon ECS frontend task definition
         id: deploy-ecs-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.register-task-definition.outputs.task-definition-arn }}
+          task-definition: ${{ steps.frontend-task-def.outputs.task-definition-arn }}
           service: ${{ env.ECS_FRONTEND_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
           wait-for-service-stability: true
