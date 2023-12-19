@@ -21,7 +21,7 @@ jobs:
       ECS_BACKEND_TASK_DEFINITION: backend_task_definition.json
       ECS_DATABASE_SERVICE: database-service
       ECS_DATABASE_TASK_DEFINITION: database_task_definition.json
-      ECS_FRONTEND_SERVICE: myfooadapp
+      ECS_FRONTEND_SERVICE: myfoodapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
       CONTAINER_NAME: foodapp
       CONTAINER_PORT: 8080
@@ -92,7 +92,7 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
-          service: ${{ env.ECS_FRONTEND_SERVICE }}
+          service: arn:aws:ecs:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:service/food-order-app/myfoodapp
           cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
           wait-for-service-stability: true
           force-new-deployment: true  # Force a new deployment
