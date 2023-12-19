@@ -91,24 +91,28 @@ jobs:
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
-          wait-for-service-stability: false
+          #wait-for-service-stability: false
           force-new-deployment: true  # Force a new deployment
 
       - name: Update ECS service with load balancer
         run: |
+            # Get the task definition ARN from the output of the previous step
+            TASK_DEFINITION_ARN=$(echo "${{ steps.frontend-task-def.outputs.task-definition }}" | jq -r '.taskDefinitionArn')
+        
+            # Update ECS service with the new task definition ARN
             aws ecs update-service \
               --cluster ${{ env.ECS_CLUSTER }} \
               --service ${{ env.ECS_FRONTEND_SERVICE }} \
               --desired-count 2 \
               --region ${{ secrets.AWS_REGION }} \
+              --task-definition $TASK_DEFINITION_ARN \
               --load-balancers '[{
                 "containerName": "foodapp",
                 "containerPort": ${{ env.CONTAINER_PORT }},
                 "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}"
               }]'
             aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
-      
-    
+        
 
 
           #- name: Update ECS service desired count
