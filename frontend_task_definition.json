@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "foodapp",
-            "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.build-image.outputs.IMAGE_TAG }}",
+            "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.build-image.outputs.frontend-IMAGE_TAG }}",
             "cpu": 0,
             "portMappings": [
                 {

@@ -46,7 +46,7 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG ./frontend
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
       - name: Build, tag, and push backend image
@@ -58,7 +58,7 @@ jobs:
 
 
       - name: Build, tag, and push database image
-        id: databse-image
+        id: database-image
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG ./database
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG
@@ -91,28 +91,30 @@ jobs:
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
-          #wait-for-service-stability: false
+          service: ${{ env.ECS_DATABASE_SERVICE }}
+          wait-for-service-stability: true
           force-new-deployment: true  # Force a new deployment
 
       - name: Update ECS service with load balancer
         run: |
             # Get the task definition ARN from the output of the previous step
-            TASK_DEFINITION_ARN=$(echo "${{ steps.frontend-task-def.outputs.task-definition }}" | jq -r '.taskDefinitionArn')
-        
+            TASK_DEFINITION_ARN=$(aws ecs describe-task-definition --task-definition "${{ steps.frontend-task-def.outputs.task-definition }}" --query 'taskDefinition.taskDefinitionArn' --output text)
+            
             # Update ECS service with the new task definition ARN
             aws ecs update-service \
               --cluster ${{ env.ECS_CLUSTER }} \
               --service ${{ env.ECS_FRONTEND_SERVICE }} \
-              --desired-count 2 \
+              --desired-count 2 \  # You're setting the desired count of tasks to 2
               --region ${{ secrets.AWS_REGION }} \
               --task-definition $TASK_DEFINITION_ARN \
               --load-balancers '[{
-                "containerName": "foodapp",
-                "containerPort": ${{ env.CONTAINER_PORT }},
-                "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}"
+                "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}",
+                "containerName": "${{ env.CONTAINER_NAME }}",
+                "containerPort": ${{ env.CONTAINER_PORT }}
               }]'
-            aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
         
+            # Wait for the service to stabilize
+            aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
 
 
           #- name: Update ECS service desired count
@@ -164,7 +166,7 @@ jobs:
                    image: ${{ steps.databse-image.outputs.image }}
   
         
-      - name: Deploy Amazon ECS frontend task definition
+      - name: Deploy Amazon ECS Database task definition
         id: deploy-databse-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:

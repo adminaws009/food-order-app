@@ -3,7 +3,7 @@
   "containerDefinitions": [
       {
           "name": "backend",
-          "image": "800773404931.dkr.ecr.us-east-1.amazonaws.com/backend:${IMAGE_TAG}",
+          "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.backend-image.outputs.backend-IMAGE_TAG }}",
           "cpu": 0,
           "portMappings": [
               {

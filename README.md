@@ -51,3 +51,7 @@ jobs:
           docker build -t database-image .
           docker tag database-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/database:latest
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/database:latest
+
+
+
+          800773404931.dkr.ecr.us-east-1.amazonaws.com/contianers:43b6d9ce7422125532c2e8d0c0cfcc90b5aa886a: not found
