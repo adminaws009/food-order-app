@@ -86,14 +86,10 @@ jobs:
       - name: List ECS Services
         run: aws ecs list-services --cluster ${{ env.ECS_CLUSTER }} --region ${{ secrets.AWS_REGION }}
 
-      - name: Create or Update ECS Service
-        id: create-update-ecs-service
+      - name: Check if the service exists and create if not
         run: |
-          # Check if the service exists
-          if aws ecs describe-services --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }} 2>&1 | grep -q 'services": \[\]'; then
-            # Create the ECS service if it doesn't exist
-            aws ecs create-service --cluster ${{ env.ECS_CLUSTER }} --service-name ${{ env.ECS_FRONTEND_SERVICE }} --task-definition ${{ steps.frontend-task-def.outputs.task-definition-arn }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
-          else
+          if aws ecs describe-services --cluster food-order-app --services myfooadapp --region ${{ secrets.AWS_REGION }} 2>&1 | grep -q 'services": \[\]'; then
+            aws ecs create-service --cluster food-order-app --service-name myfooadapp --task-definition ${{ steps.frontend-task-def.outputs.task-definition-arn }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
 
       - name: Deploy Amazon ECS frontend task definition
         id: deploy-ecs-task-def
