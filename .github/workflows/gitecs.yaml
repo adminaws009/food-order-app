@@ -83,14 +83,16 @@ jobs:
            container-name: foodapp
            image: ${{ steps.build-image.outputs.image }}
 
-
+      - name: List ECS Services
+        run: aws ecs list-services --cluster ${{ env.ECS_CLUSTER }} --region ${{ secrets.AWS_REGION }}
+         
 
       - name: Deploy Amazon ECS frontend task definition
         id: deploy-ecs-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
-          service: ${{ env.ECS_FRONTEND_SERVICE }}
+          #service: ${{ env.ECS_FRONTEND_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
           wait-for-service-stability: true
           force-new-deployment: true  # Force a new deployment
