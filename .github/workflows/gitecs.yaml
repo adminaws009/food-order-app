@@ -97,34 +97,22 @@ jobs:
           wait-for-service-stability: true
           force-new-deployment: true  # Force a new deployment
 
-      - name: Update ECS service with load balancer
-        run: |
-            # Get the task definition ARN from the output of the previous step
-            TASK_DEFINITION_ARN=$(aws ecs describe-task-definition --task-definition "${{ steps.frontend-task-def.outputs.task-definition }}" --query 'taskDefinition.taskDefinitionArn' --output text)
-            
-            # Update ECS service with the new task definition ARN
-            aws ecs update-service \
-              --cluster ${{ env.ECS_CLUSTER }} \
-              --service ${{ env.ECS_FRONTEND_SERVICE }} \
-              --desired-count 2 \  # You're setting the desired count of tasks to 2
-              --region ${{ secrets.AWS_REGION }} \
-              --task-definition $TASK_DEFINITION_ARN \
-              --load-balancers '[{
-                "targetGroupArn": "${{ secrets.TARGET_GROUP_ARN }}",
-                "containerName": "${{ env.CONTAINER_NAME }}",
-                "containerPort": ${{ env.CONTAINER_PORT }}
-              }]'
-        
-            # Wait for the service to stabilize
-            aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }} --region ${{ secrets.AWS_REGION }}
-
-
-          #- name: Update ECS service desired count
+      #- name: Update ECS service desired count
         #run: |
-           #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 2 --region ${{ secrets.AWS_REGION }}
+           #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
         
 
-
+      - name: Update ECS service
+        id: update-ecs-service
+        run: |
+             # Update or create ECS service with the new task definition and load balancer
+             aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
+                                    --service ${{ env.ECS_FRONTEND_SERVICE }} \
+                                    --task-definition ${{ steps.frontend-task-def.outputs.task-definition }} \
+                                    --desired-count 2 \
+                                    --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN }},containerName=${{ env.CONTAINER_NAME }},containerPort=${{ env.CONTAINER_PORT }}
+         # Wait for the ECS service to become stable 
+  
 #BACKEND ECS DEPLOYMENT
 
 
