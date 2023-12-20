@@ -7,8 +7,7 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 COPY index*.js ./
-COPY index.html ./
-COPY ../frontend/index.html /app/
+COPY index*.html ./
 
 # Install app dependencies
 RUN npm install
