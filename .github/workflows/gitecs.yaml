@@ -148,19 +148,19 @@ jobs:
 
 
       - name: Render Databse ECS Task Definition
-        id: databse-task-def
+        id: database-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
                    task-definition: database_task_definition.json
                    container-name: database
-                   image: ${{ steps.databse-image.outputs.image }}
+                   image: ${{ steps.database-image.outputs.image }}
   
         
       - name: Deploy Amazon ECS Database task definition
-        id: deploy-databse-task-def
+        id: deploy-database-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-                  task-definition: ${{ steps.databse-task-def.outputs.task-definition }}
+                  task-definition: ${{ steps.database-task-def.outputs.task-definition }}
                   service: ${{ env.ECS_DATABASE_SERVICE }}
                   cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
                   wait-for-service-stability: false
