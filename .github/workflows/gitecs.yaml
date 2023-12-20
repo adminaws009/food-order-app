@@ -108,7 +108,7 @@ jobs:
              # Update or create ECS service with the new task definition and load balancer
              aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
                                     --service ${{ env.ECS_FRONTEND_SERVICE }} \
-                                    --task-definition ${{ steps.frontend-task-def.outputs.task-definition }} \
+                                    --task-definition frontend_task_definition.json \
                                     --desired-count 2 \
                                     --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN }},containerName=${{ env.CONTAINER_NAME }},containerPort=${{ env.CONTAINER_PORT }}
          # Wait for the ECS service to become stable 
