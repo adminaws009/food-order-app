@@ -1,33 +1,33 @@
 {
     "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/myfrontend:27",
     "containerDefinitions": [
-        {
-            "name": "foodapp",
-            "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.build-image.outputs.frontend-IMAGE_TAG }}",
-            "cpu": 0,
-            "portMappings": [
-                {
-                    "name": "foodapp-8080-tcp",
-                    "containerPort": 8080,
-                    "hostPort": 8080,
-                    "protocol": "tcp",
-                    "appProtocol": "http"
-                }
-            ],
-            "essential": true,
-            "environment": [],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-create-group": "true",
-                    "awslogs-group": "/ecs/myfrontend",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            }
+      {
+        "name": "foodapp",
+        "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.build-image.outputs.frontend-IMAGE_TAG }}",
+        "cpu": 0,
+        "portMappings": [
+          {
+            "name": "foodapp-80-tcp",
+            "containerPort": 80,
+            "hostPort": 80,
+            "protocol": "tcp",
+            "appProtocol": "http"
+          }
+        ],
+        "essential": true,
+        "environment": [],
+        "mountPoints": [],
+        "volumesFrom": [],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-create-group": "true",
+            "awslogs-group": "/ecs/myfrontend",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "ecs"
+          }
         }
+      }
     ],
     "family": "myfrontend",
     "taskRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
@@ -36,49 +36,57 @@
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.task-iam-role"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
-        }
+      {
+        "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+      },
+      {
+        "name": "ecs.capability.execution-role-awslogs"
+      },
+      {
+        "name": "com.amazonaws.ecs.capability.ecr-auth"
+      },
+      {
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+      },
+      {
+        "name": "com.amazonaws.ecs.capability.task-iam-role"
+      },
+      {
+        "name": "ecs.capability.execution-role-ecr-pull"
+      },
+      {
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+      },
+      {
+        "name": "ecs.capability.task-eni"
+      },
+      {
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+      }
     ],
     "placementConstraints": [],
     "compatibilities": [
-        "EC2",
-        "FARGATE"
+      "EC2",
+      "FARGATE"
     ],
     "requiresCompatibilities": [
-        "FARGATE"
+      "FARGATE"
     ],
     "cpu": "1024",
     "memory": "3072",
     "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
-        "operatingSystemFamily": "LINUX"
+      "cpuArchitecture": "X86_64",
+      "operatingSystemFamily": "LINUX"
     },
     "registeredAt": "2023-12-18T23:24:01.666Z",
     "registeredBy": "arn:aws:iam::800773404931:user/Admin",
-    "tags": []
-}
+    "tags": [],
+    "serviceRegistries": [
+      {
+        "registryArn": "arn:aws:ecs:us-east-1:800773404931:service/food-order-app/myfoodapp",
+        "containerName": "foodapp",
+        "containerPort": 80
+      }
+    ]
+  }
+  

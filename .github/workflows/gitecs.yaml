@@ -3,7 +3,7 @@ name: CI/CD with Docker, ECR, and ECS
 on:
   push:
     branches:
-      - main
+    - main
 
 jobs:
   build-and-deploy:
@@ -24,163 +24,158 @@ jobs:
       ECS_FRONTEND_SERVICE: myfoodapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
       CONTAINER_NAME: foodapp
-      CONTAINER_PORT: 8080
+      CONTAINER_NAME_BACKEND: backend
+      CONTAINER_PORT: 80
+      CONTAINER_PORT_BACKEND: 8080
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Authenticate to AWS
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+    - name: Authenticate to AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY
+    - name: Login to Amazon ECR
+      id: login-ecr
+      run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY
 
-      - name: Build, tag, and push frontend image
-        id: build-image
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG ./frontend
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-
-      - name: Build, tag, and push backend image
-        id: backend-image
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG ./backend
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG" >> $GITHUB_OUTPUT
+    - name: Build, tag, and push frontend image
+      id: build-image
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG ./frontend
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:frontend-$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
-      - name: Build, tag, and push database image
-        id: database-image
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG ./database
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_OUTPUT
-#
+    - name: Build, tag, and push backend image
+      id: backend-image
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG ./backend
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:backend-$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
-#FRONT END ECS DEPLOYMENT WITH LOADBALANCER ATTACHEMNT 
+    - name: Build, tag, and push database image
+      id: database-image
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG ./database
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:database-$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
-
-      - name: Download frontend task definition
-        run: |
-              cat frontend_task_definition.json > frontend-task-definition.json
-
-
-      - name: Render Frontend ECS Task Definition
-        id: frontend-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-           task-definition: frontend_task_definition.json
-           container-name: foodapp
-           image: ${{ steps.build-image.outputs.image }}
-
-      - name: List ECS Services
-        run: aws ecs list-services --cluster ${{ env.ECS_CLUSTER }} --region ${{ secrets.AWS_REGION }}
+    - name: Download frontend task definition
+      run: |
+        cat frontend_task_definition.json > frontend-task-definition.json
 
 
-      - name: Deploy Amazon ECS frontend task definition
-        id: deploy-ecs-task-def
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
-          service: arn:aws:ecs:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:service/food-order-app/myfoodapp
-          cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
-          wait-for-service-stability: true
-          force-new-deployment: true  # Force a new deployment
+    - name: Render Frontend ECS Task Definition
+      id: frontend-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: frontend_task_definition.json
+        container-name: foodapp
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: List ECS Services
+      run: aws ecs list-services --cluster ${{ env.ECS_CLUSTER }} --region ${{ secrets.AWS_REGION }}
+
+    - name: Deploy Amazon ECS frontend task definition
+      id: deploy-ecs-task-def
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.frontend-task-def.outputs.task-definition }}
+        service: arn:aws:ecs:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:service/food-order-app/myfoodapp
+        cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+        wait-for-service-stability: true
+        force-new-deployment: true # Force a new deployment
 
       #- name: Update ECS service desired count
-        #run: |
-           #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
-        
-
-      - name: Update ECS service
-        id: update-ecs-service
-        run: |
-             # Update or create ECS service with the new task definition and load balancer
-             aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
-                                    --service ${{ env.ECS_FRONTEND_SERVICE }} \
-                                    --task-definition myfrontend \
-                                    --desired-count 1 \
-                                    --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN }},containerName=${{ env.CONTAINER_NAME }},containerPort=${{ env.CONTAINER_PORT }}
-         # Wait for the ECS service to become stable 
-  
-#BACKEND ECS DEPLOYMENT
+      #run: |
+      #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_FRONTEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
 
 
-      - name: Render Backend ECS Task Definition
-        id: backend-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-              task-definition: backend_task_definition.json
-              container-name: backend
-              image: ${{ steps.backend-image.outputs.image }}
-  
-   
-      - name: Deploy Amazon ECS Backend task definition
-        id: deploy-backend-task-def
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-             task-definition: ${{ steps.backend-task-def.outputs.task-definition }}
-             service: ${{ env.ECS_BACKEND_SERVICE }}
-             cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
-             wait-for-service-stability: false
-             force-new-deployment: true  #
+    - name: Update Frontend ECS service
+      id: update-ecs-service
+      run: |
+        # Update or create ECS service with the new task definition and load balancer
+        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
+                               --service ${{ env.ECS_FRONTEND_SERVICE }} \
+                               --task-definition myfrontend \
+                               --desired-count 1 \
+                               --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN }},containerName=${{ env.CONTAINER_NAME }},containerPort=${{ env.CONTAINER_PORT }}
+      # Wait for the ECS service to become stable 
+    - name: Render Backend ECS Task Definition
+      id: backend-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: backend_task_definition.json
+        container-name: backend
+        image: ${{ steps.backend-image.outputs.image }}
+
+    - name: Deploy Amazon ECS Backend task definition
 
 
-      - name: Update ECS Backend service desired count
-        run: |
-              aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_BACKEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
-             
-     
-     
-     
-         # DATABASE ECS DEPLOYMENT
+      id: deploy-backend-task-def
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.backend-task-def.outputs.task-definition }}
+        service: ${{ env.ECS_BACKEND_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+        wait-for-service-stability: false
+        force-new-deployment: true #
 
+    - name: Update ECS Backend service desired count
+      run: |
+        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_BACKEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
 
+    - name: Update ECS service Backend
+      id: backend-update-ecs-service
+      run: |
+        # Update or create ECS service with the new task definition and load balancer
+        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
+                               --service ${{ env.ECS_BACKEND_SERVICE }} \
+                               --task-definition myfrontend \
+                               --desired-count 1 \
+                               --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }}
+      # Wait for the ECS service to become stable 
+    - name: Render Databse ECS Task Definition
+      id: database-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: database_task_definition.json
+        container-name: database
+        image: ${{ steps.database-image.outputs.image }}
 
-      - name: Render Databse ECS Task Definition
-        id: database-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-                   task-definition: database_task_definition.json
-                   container-name: database
-                   image: ${{ steps.database-image.outputs.image }}
-  
-        
-      - name: Deploy Amazon ECS Database task definition
-        id: deploy-database-task-def
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-                  task-definition: ${{ steps.database-task-def.outputs.task-definition }}
-                  service: ${{ env.ECS_DATABASE_SERVICE }}
-                  cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
-                  wait-for-service-stability: false
-                  force-new-deployment: true  #
-     
-      - name: Update ECS service desired count
-        run: |
-           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_DATABASE_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
-        
+    - name: Deploy Amazon ECS Database task definition
+
+      id: deploy-database-task-def
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.database-task-def.outputs.task-definition }}
+        service: ${{ env.ECS_DATABASE_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
+        wait-for-service-stability: false
+        force-new-deployment: true #
+
+    - name: Update ECS service desired count
+      run: |
+        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_DATABASE_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
+
 
 
 
 
       #- name: Delete ECS Service
-        #uses: scribd/amazon-ecs-service-action@v1
-        #with:
-          #spec: |
-           #{
-            #"cluster": "${{ env.ECS_CLUSTER }}",
-            #"serviceName": "${{ env.ECS_FRONTEND_SERVICE }}"
-            #}
-          #action: delete
-          #force-delete: true
+#uses: scribd/amazon-ecs-service-action@v1
+#with:
+#spec: |
+#{
+#"cluster": "${{ env.ECS_CLUSTER }}",
+#"serviceName": "${{ env.ECS_FRONTEND_SERVICE }}"
+#}
+#action: delete
+#force-delete: true

@@ -1,88 +1,102 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/backend:1",
-  "containerDefinitions": [
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:800773404931:task-definition/backend:1",
+    "containerDefinitions": [
       {
-          "name": "backend",
-          "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.backend-image.outputs.backend-IMAGE_TAG }}",
-          "cpu": 0,
-          "portMappings": [
-              {
-                  "name": "backend-8080-tcp",
-                  "containerPort": 8080,
-                  "hostPort": 8080,
-                  "protocol": "tcp",
-                  "appProtocol": "http"
-              }
-          ],
-          "essential": true,
-          "environment": [],
-          "environmentFiles": [],
-          "mountPoints": [],
-          "volumesFrom": [],
-          "ulimits": [],
-          "logConfiguration": {
-              "logDriver": "awslogs",
-              "options": {
-                  "awslogs-create-group": "true",
-                  "awslogs-group": "/ecs/mybackend",
-                  "awslogs-region": "us-east-1",
-                  "awslogs-stream-prefix": "ecs"
-              },
-              "secretOptions": []
+        "name": "backend",
+        "image": "${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ steps.backend-image.outputs.backend-IMAGE_TAG }}",
+        "cpu": 0,
+        "portMappings": [
+          {
+            "name": "backend-8080-tcp",
+            "containerPort": 8080,
+            "hostPort": 8080,
+            "protocol": "tcp",
+            "appProtocol": "http"
           }
+        ],
+        "essential": true,
+        "environment": [
+          { "name": "AWS_DEFAULT_REGION", "value": "us-east-1" },
+          { "name": "DB_HOST", "value": "database.foodapp-namespace" },
+          { "name": "DB_USER", "value": "root" },
+          { "name": "DB_PASSWORD", "value": "password" },
+          { "name": "DB_DATABASE", "value": "foodOrders" }
+        ],
+        "environmentFiles": [],
+        "mountPoints": [],
+        "volumesFrom": [],
+        "ulimits": [],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-create-group": "true",
+            "awslogs-group": "/ecs/mybackend",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "ecs"
+          },
+          "secretOptions": []
+        }
       }
-  ],
-  "family": "mybackend",
-  "taskRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
-  "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
-  "networkMode": "awsvpc",
-  "revision": 1,
-  "volumes": [],
-  "status": "ACTIVE",
-  "requiresAttributes": [
+    ],
+    "family": "mybackend",
+    "taskRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::800773404931:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 1,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
       {
-          "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
       },
       {
-          "name": "ecs.capability.execution-role-awslogs"
+        "name": "ecs.capability.execution-role-awslogs"
       },
       {
-          "name": "com.amazonaws.ecs.capability.ecr-auth"
+        "name": "com.amazonaws.ecs.capability.ecr-auth"
       },
       {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
       },
       {
-          "name": "com.amazonaws.ecs.capability.task-iam-role"
+        "name": "com.amazonaws.ecs.capability.task-iam-role"
       },
       {
-          "name": "ecs.capability.execution-role-ecr-pull"
+        "name": "ecs.capability.execution-role-ecr-pull"
       },
       {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
       },
       {
-          "name": "ecs.capability.task-eni"
+        "name": "ecs.capability.task-eni"
       },
       {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
       }
-  ],
-  "placementConstraints": [],
-  "compatibilities": [
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
       "EC2",
       "FARGATE"
-  ],
-  "requiresCompatibilities": [
+    ],
+    "requiresCompatibilities": [
       "FARGATE"
-  ],
-  "cpu": "1024",
-  "memory": "3072",
-  "runtimePlatform": {
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
       "cpuArchitecture": "X86_64",
       "operatingSystemFamily": "LINUX"
-  },
-  "registeredAt": "2023-12-18T20:46:24.391Z",
-  "registeredBy": "arn:aws:iam::800773404931:user/Admin",
-  "tags": []
-}
+    },
+    "registeredAt": "2023-12-18T20:46:24.391Z",
+    "registeredBy": "arn:aws:iam::800773404931:user/Admin",
+    "tags": [],
+    "serviceRegistries": [
+      {
+        "registryArn": "arn:aws:ecs:us-east-1:800773404931:service/food-order-app/backend-service",
+        "containerName": "backend",
+        "containerPort": 8080
+      }
+    ]
+  }
+  
