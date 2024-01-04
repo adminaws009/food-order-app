@@ -108,7 +108,9 @@ jobs:
                                --task-definition myfrontend \
                                --desired-count 1 \
                                --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN }},containerName=${{ env.CONTAINER_NAME }},containerPort=${{ env.CONTAINER_PORT }}
-      # Wait for the ECS service to become stable 
+    # Wait for the ECS service to become stable 
+
+#      
     - name: Render Backend ECS Task Definition
       id: backend-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -116,10 +118,9 @@ jobs:
         task-definition: backend_task_definition.json
         container-name: backend
         image: ${{ steps.backend-image.outputs.image }}
+ #       
 
     - name: Deploy Amazon ECS Backend task definition
-
-
       id: deploy-backend-task-def
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
@@ -128,26 +129,27 @@ jobs:
         cluster: ${{ env.ECS_CLUSTER }} # Using the environment variable for service name
         wait-for-service-stability: false
         force-new-deployment: true #
+#
 
-      #- name: Update ECS Backend service desired count
-      #  run: |
+    #- name: Update ECS Backend service desired count
+     # run: |
       #  aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_BACKEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
+
+
+
 
     - name: Update ECS service Backend
       id: backend-update-ecs-service
       run: |
-        # Update or create ECS service with the new task definition and load balancer
-        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
-                               --service ${{ env.ECS_BACKEND_SERVICE }} \
-                               --task-definition mybackend \
-                               --desired-count 1 \
-                               --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }} \
-                               --enable-service-discovery \
-                               --service-registries '[{"registryArn":"arn:aws:servicediscovery:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:service/${{ env.ECS_NAMESPACE }}/backend","containerName":"backend","containerPort":8080}]'
-    # Wait for the ECS service to become stable
-    
-
-
+          # Update or create ECS service with the new task definition and load balancer
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
+                                 --service ${{ env.ECS_BACKEND_SERVICE }} \
+                                 --task-definition mybackend \
+                                 --desired-count 1 \
+                                 --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }}
+          # Additional commands or comments here if needed
+      
+          
 
     - name: Render Databse ECS Task Definition
       id: database-task-def
@@ -157,8 +159,8 @@ jobs:
         container-name: database
         image: ${{ steps.database-image.outputs.image }}
 
+#
     - name: Deploy Amazon ECS Database task definition
-
       id: deploy-database-task-def
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
@@ -168,20 +170,10 @@ jobs:
         wait-for-service-stability: false
         force-new-deployment: true #
 
-    - name: Update ECS Database service with Service Connect
-      #- name: Update ECS Database service desired count
-      # run: |
-      #aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_DATABASE_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
-
-
+#  
+    - name: Update ECS Database service desired count
       run: |
-        aws ecs update-service \
-        --cluster ${{ env.ECS_CLUSTER }} \
-        --service ${{ env.ECS_DATABASE_SERVICE }} \
-        --desired-count 1 \
-        --region ${{ secrets.AWS_REGION }} \
-        --enable-service-discovery \
-        --service-registries 'registryArn=arn:aws:servicediscovery:region:account-id:service/foodapp-namespace/database,containerName=database,containerPort=3306'
+         aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_DATABASE_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
 
 
 
