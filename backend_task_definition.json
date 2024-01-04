@@ -93,7 +93,7 @@
     "tags": [],
     "serviceRegistries": [
       {
-        "registryArn": "arn:aws:ecs:us-east-1:800773404931:service/food-order-app/backend-service",
+        "registryArn": "arn:aws:servicediscovery:us-east-1:800773404931:service/foodapp-namespace/backend-service",
         "containerName": "backend",
         "containerPort": 8080
       }
