@@ -141,7 +141,6 @@ jobs:
                                --task-definition mybackend \
                                --desired-count 1 \
                                --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }}
-                               --region ${{ secrets.AWS_REGION }} \
                                --enable-service-discovery \
                                --service-registries 'registryArn=arn:aws:servicediscovery:region:account-id:service/foodapp-namespace/backend,containerName=backend,containerPort=8080'
       # Wait for the ECS service to become stable 
