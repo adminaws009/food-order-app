@@ -24,7 +24,7 @@ jobs:
       ECS_FRONTEND_SERVICE: myfoodapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
       CONTAINER_NAME: foodapp
-      CONTAINER_NAME_BACKEND: backend
+      CONTAINER_NAME_BACKEND: backend-service
       CONTAINER_PORT: 8080
       CONTAINER_PORT_BACKEND: 8080
 
