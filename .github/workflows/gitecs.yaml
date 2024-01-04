@@ -24,7 +24,7 @@ jobs:
       ECS_FRONTEND_SERVICE: myfoodapp
       ECS_FRONTEND_TASK_DEFINITION: frontend_task_definition.json
       CONTAINER_NAME: foodapp
-      CONTAINER_NAME_BACKEND: backend-service
+      CONTAINER_NAME_BACKEND: backend
       CONTAINER_PORT: 8080
       CONTAINER_PORT_BACKEND: 8080
 
@@ -138,7 +138,7 @@ jobs:
         # Update or create ECS service with the new task definition and load balancer
         aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
                                --service ${{ env.ECS_BACKEND_SERVICE }} \
-                               --task-definition myfrontend \
+                               --task-definition backend \
                                --desired-count 1 \
                                --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }}
                                --region ${{ secrets.AWS_REGION }} \
