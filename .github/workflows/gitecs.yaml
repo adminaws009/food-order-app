@@ -128,9 +128,9 @@ jobs:
         wait-for-service-stability: false
         force-new-deployment: true #
 
-    - name: Update ECS Backend service desired count
-      run: |
-        aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_BACKEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
+      #- name: Update ECS Backend service desired count
+      #  run: |
+      #  aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_BACKEND_SERVICE }} --desired-count 1 --region ${{ secrets.AWS_REGION }}
 
     - name: Update ECS service Backend
       id: backend-update-ecs-service
@@ -138,7 +138,7 @@ jobs:
         # Update or create ECS service with the new task definition and load balancer
         aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} \
                                --service ${{ env.ECS_BACKEND_SERVICE }} \
-                               --task-definition backend \
+                               --task-definition mybackend \
                                --desired-count 1 \
                                --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }}
                                --region ${{ secrets.AWS_REGION }} \
@@ -146,6 +146,9 @@ jobs:
                                --service-registries 'registryArn=arn:aws:servicediscovery:region:account-id:service/foodapp-namespace/backend,containerName=backend,containerPort=8080'
       # Wait for the ECS service to become stable 
     - name: Render Databse ECS Task Definition
+
+
+
 
 
       id: database-task-def
