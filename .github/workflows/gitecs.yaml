@@ -27,6 +27,7 @@ jobs:
       CONTAINER_NAME_BACKEND: backend
       CONTAINER_PORT: 8080
       CONTAINER_PORT_BACKEND: 8080
+      ECS_NAMESPACE: foodapp-namespace
 
     steps:
     - name: Checkout code
@@ -140,16 +141,15 @@ jobs:
                                --service ${{ env.ECS_BACKEND_SERVICE }} \
                                --task-definition mybackend \
                                --desired-count 1 \
-                               --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }}
+                               --load-balancers targetGroupArn=${{ secrets.TARGET_GROUP_ARN_BACKEND }},containerName=${{ env.CONTAINER_NAME_BACKEND }},containerPort=${{ env.CONTAINER_PORT_BACKEND }} \
                                --enable-service-discovery \
-                               --service-registries 'registryArn=arn:aws:servicediscovery:region:account-id:service/foodapp-namespace/backend,containerName=backend,containerPort=8080'
-      # Wait for the ECS service to become stable 
+                               --service-registries '[{"registryArn":"arn:aws:servicediscovery:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:service/${{ env.ECS_NAMESPACE }}/backend","containerName":"backend","containerPort":8080}]'
+    # Wait for the ECS service to become stable
+    
+
+
+
     - name: Render Databse ECS Task Definition
-
-
-
-
-
       id: database-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
