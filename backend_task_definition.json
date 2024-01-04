@@ -90,13 +90,7 @@
     },
     "registeredAt": "2023-12-18T20:46:24.391Z",
     "registeredBy": "arn:aws:iam::800773404931:user/Admin",
-    "tags": [],
-    "serviceRegistries": [
-      {
-        "registryArn": "arn:aws:servicediscovery:us-east-1:800773404931:service/foodapp-namespace/backend-service",
-        "containerName": "backend",
-        "containerPort": 8080
-      }
-    ]
+    "tags": []
+
   }
   

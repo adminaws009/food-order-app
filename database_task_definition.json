@@ -87,13 +87,6 @@
     },
     "registeredAt": "2023-12-18T20:49:48.048Z",
     "registeredBy": "arn:aws:iam::800773404931:user/Admin",
-    "tags": [],
-    "serviceRegistries": [
-      {
-        "registryArn": "arn:aws:servicediscovery:us-east-1:800773404931:service/foodapp-namespace/database",
-        "containerName": "database",
-        "containerPort": 3306
-      }
-    ]
+    "tags": []
   }
   
