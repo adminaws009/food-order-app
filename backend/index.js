@@ -29,6 +29,12 @@ app.get('/', (req, res) => {
 app.post('/backend/place-order', async (req, res) => {
   try {
     const { name, phone, foodType, quantity } = req.body;
+
+    // Server-side validation
+    if (!name || !phone || !foodType || quantity <= 0) {
+      return res.status(400).send('Invalid input. Please provide valid data.');
+    }
+
     const itemCost = 12;
 
     // Calculate total cost

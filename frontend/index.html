@@ -10,25 +10,55 @@
     <div class="welcome-section">
         <h1>Welcome To Charlo's African Special</h1>
         <!-- Your existing form for menu and drinks -->
-        <form action="/place-order" method="post">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            <br>
-            <label for="phone">Phone Number:</label>
-            <input type="text" id="phone" name="phone" required>
-            <br>
-            <label for="foodType">Select a type of food:</label>
-            <select id="foodType" name="foodType">
-                <option value="pizza">Pizza</option>
-                <option value="burger">Burger</option>
-                <option value="sushi">Sushi</option>
-            </select>
-            <br>
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" name="quantity" min="1" required>
-            <br>
-            <button type="submit">Place Order</button>
+        <form action="https://food-app-load-balancer-506892478.us-east-1.elb.amazonaws.com/backend/place-order" method="post" onsubmit="return validateForm()">
+            <fieldset>
+                <legend>Order Details</legend>
+
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required aria-label="Name">
+
+                <br>
+
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" required aria-label="Phone Number">
+
+                <br>
+
+                <label for="foodType">Select a type of food:</label>
+                <select id="foodType" name="foodType" aria-label="Food Type">
+                    <option value="pizza">Pizza</option>
+                    <option value="burger">Burger</option>
+                    <option value="sushi">Sushi</option>
+                </select>
+
+                <br>
+
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" required aria-label="Quantity">
+
+                <br>
+
+                <button type="submit">Place Order</button>
+            </fieldset>
         </form>
     </div>
+
+    <script>
+        function validateForm() {
+            var name = document.getElementById('name').value;
+            var phone = document.getElementById('phone').value;
+            var quantity = document.getElementById('quantity').value;
+
+            // Perform your validation logic here
+            if (name.trim() === "" || phone.trim() === "" || quantity <= 0) {
+                alert("Please fill in all the required fields and ensure quantity is greater than 0.");
+                return false; // Prevent form submission
+            }
+
+            // Additional validation checks can be added as needed
+
+            return true; // Allow form submission
+        }
+    </script>
 </body>
 </html>
