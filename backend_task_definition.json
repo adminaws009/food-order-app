@@ -17,7 +17,7 @@
         "essential": true,
         "environment": [
           { "name": "AWS_DEFAULT_REGION", "value": "us-east-1" },
-          { "name": "DB_HOST", "value": "database.foodapp-namespace" },
+          { "name": "DB_HOST", "value": "foodapp-namespace" },
           { "name": "DB_USER", "value": "root" },
           { "name": "DB_PASSWORD", "value": "password" },
           { "name": "DB_DATABASE", "value": "foodOrders" }

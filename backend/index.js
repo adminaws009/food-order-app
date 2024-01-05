@@ -6,7 +6,7 @@ const app = express();
 const port = 8080;
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'database.foodapp-namespace',
+  host: process.env.DB_HOST || 'foodapp-namespace',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE
